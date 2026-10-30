@@ -22,5 +22,11 @@ button:disabled { opacity: .65; cursor: wait; }
 #status { min-height: 24px; }
 #status.error { color: #a12424; }
 #results { margin-top: 24px; }
+.ai-response { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.7; }
+.thinking { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+.thinking[hidden] { display: none; }
+.spinner { width: 18px; height: 18px; flex-shrink: 0; border: 2px solid #dce2e7; border-top-color: #102e48; border-radius: 50%; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }
 li { padding: 8px 0; line-height: 1.6; }
 @media (max-width: 480px) { main { padding: 28px 16px; } .card { padding: 20px; } }

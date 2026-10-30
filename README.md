@@ -16,7 +16,7 @@ Jinja2 renders the page and results on the server. The form posts to `/analyze` 
 ### Quick Test
 
 1. Enter `Python, HTML` as your skills and `Backend internship using Python and SQL` as the job description.
-2. Click **Test my career roadmap**. You should see **Connected!** and three demo steps.
+2. Click **Generate my career roadmap**. After the request completes, you should see a real AI response and the model name.
 3. Open http://127.0.0.1:8000/api/health to see `{"status":"ok"}`.
 4. Open http://127.0.0.1:8000/docs to try the API directly.
 5. Press `Ctrl+C` in the terminal to stop the server.
@@ -35,9 +35,9 @@ Type your prompt when asked, or pass it directly:
 uv run python -m backend.test_connection "Suggest three skills for a Python backend internship."
 ```
 
-Each run sends one prompt and prints the response, keeping the key private. It discovers an available Gemma model (preferring Gemma 4 if listed). To choose a specific model, add `GEMINI_MODEL=your-model-id` to `.env`. Check the printed model name: success confirms access to that model, not necessarily Gemma 4. This test does not change the web form's demo behavior.
+Each run sends one prompt and prints the response, keeping the key private. It discovers an available Gemma model (preferring Gemma 4 if listed). To choose a specific model, add `GEMINI_MODEL=your-model-id` to `.env`. Check the printed model name: success confirms access to that model, not necessarily Gemma 4. The web form also uses the Google API through a server-side connection.
 
-This starter returns demo data. Gemma, real skill analysis, resource recommendations, and interview questions are not connected yet.
+The form sends skills and the job description to Google and renders a Gemma response with a skill gap summary, three learning steps, and interview questions. The default model is `gemma-4-26b-a4b-it`; override it with `GEMINI_MODEL` in `.env`. Free resource recommendations are not connected yet. API errors appear on the page while preserving your inputs.
 
 ### Project Layout
 
@@ -45,6 +45,8 @@ This starter returns demo data. Gemma, real skill analysis, resource recommendat
 backend/
   __init__.py
   main.py          # FastAPI routes and frontend serving
+  ai.py            # Server-side Google API connection
+  test_connection.py # Terminal prompt demo
 frontend/
   index.html       # Jinja2 template for the form and results
   styles.css       # Styling

@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>RutaUp | Your next career step</title>
   <link rel="stylesheet" href="/static/styles.css">
+  <script src="/static/loading.js" defer></script>
 </head>
 <body>
   <main>
@@ -21,9 +22,13 @@
         <textarea id="skills" name="skills" rows="3" maxlength="5000" placeholder="Python, HTML, teamwork…" required>{{ skills }}</textarea>
         <label for="job-description">Target job description</label>
         <textarea id="job-description" name="job_description" rows="5" maxlength="10000" placeholder="Paste a job description here…" required>{{ job_description }}</textarea>
-        <button type="submit">Test my career roadmap <span aria-hidden="true">→</span></button>
+        <button type="submit">Generate my career roadmap <span aria-hidden="true">→</span></button>
       </form>
-      <p class="note">Connection demo · AI analysis is coming next.</p>
+      <p id="thinking" class="thinking" role="status" aria-live="polite" hidden>
+        <span class="spinner" aria-hidden="true"></span>
+        Thinking… Preparing your career roadmap.
+      </p>
+      <p class="note">Powered by Gemma through the Google API. Your inputs are sent to Google. Results may take up to a minute.</p>
     </section>
     {% if error %}
     <p id="status" class="error" role="alert">{{ error }}</p>
@@ -31,14 +36,9 @@
     {% if result %}
     <section id="results" class="card" aria-labelledby="results-heading">
       <p class="eyebrow">YOUR STARTING POINT</p>
-      <h2 id="results-heading">Connected!</h2>
-      <p>{{ result.message }}</p>
-      <p class="note">{{ result.mode }}</p>
-      <ol>
-        {% for step in result.next_steps %}
-        <li>{{ step }}</li>
-        {% endfor %}
-      </ol>
+      <h2 id="results-heading">Your career roadmap</h2>
+      <p class="note">Model: {{ result.model }}</p>
+      <div class="ai-response">{{ result.text }}</div>
     </section>
     {% endif %}
   </main>
