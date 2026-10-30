@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RutaUp | Your next career step</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <main>
+    <header>
+      <p class="eyebrow">BUILT FOR FIU STUDENTS</p>
+      <h1>RutaUp<span>.</span></h1>
+      <p>Your next career step starts here.</p>
+    </header>
+    <section class="card" aria-labelledby="form-heading">
+      <h2 id="form-heading">Where do you want to go?</h2>
+      <p>Share your skills and the role you’re working toward.</p>
+      <form id="career-form" method="post" action="/analyze">
+        <label for="skills">Your current skills</label>
+        <textarea id="skills" name="skills" rows="3" maxlength="5000" placeholder="Python, HTML, teamwork…" required>{{ skills }}</textarea>
+        <label for="job-description">Target job description</label>
+        <textarea id="job-description" name="job_description" rows="5" maxlength="10000" placeholder="Paste a job description here…" required>{{ job_description }}</textarea>
+        <button type="submit">Test my career roadmap <span aria-hidden="true">→</span></button>
+      </form>
+      <p class="note">Connection demo · AI analysis is coming next.</p>
+    </section>
+    {% if error %}
+    <p id="status" class="error" role="alert">{{ error }}</p>
+    {% endif %}
+    {% if result %}
+    <section id="results" class="card" aria-labelledby="results-heading">
+      <p class="eyebrow">YOUR STARTING POINT</p>
+      <h2 id="results-heading">Connected!</h2>
+      <p>{{ result.message }}</p>
+      <p class="note">{{ result.mode }}</p>
+      <ol>
+        {% for step in result.next_steps %}
+        <li>{{ step }}</li>
+        {% endfor %}
+      </ol>
+    </section>
+    {% endif %}
+  </main>
+</body>
+</html>

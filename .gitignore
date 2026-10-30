@@ -6,6 +6,7 @@ nicosdevlog.md
 
 # Python and uv environments
 .venv/
+.uv-cache/
 __pycache__/
 *.py[cod]
 .pytest_cache/
