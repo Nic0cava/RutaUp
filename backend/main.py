@@ -1,10 +1,12 @@
 from pathlib import Path
 
-from fastapi import FastAPI, Form, Request
+from fastapi import FastAPI, Form, HTTPException, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field, ValidationError, field_validator
+
+from backend.ai import AIError, generate_career_response
 
 FRONTEND = Path(__file__).resolve().parent.parent / "frontend"
 app = FastAPI(title="RutaUp API")
@@ -49,7 +51,13 @@ def analyze_form(
         return templates.TemplateResponse(
             request=request, name="index.html", context=context, status_code=422,
         )
-    context["result"] = analyze(payload)
+    try:
+        context["result"] = generate_career_response(payload.skills, payload.job_description)
+    except AIError as exc:
+        context["error"] = str(exc)
+        return templates.TemplateResponse(
+            request=request, name="index.html", context=context, status_code=502,
+        )
     return templates.TemplateResponse(
         request=request, name="index.html", context=context,
     )
@@ -62,15 +70,7 @@ def health():
 
 @app.post("/api/analyze")
 def analyze(payload: AnalysisRequest):
-    # Connection demo only. Replace this response with Gemma output later.
-    return {
-        "message": "Your frontend successfully connected to FastAPI!",
-        "mode": "Demo — Gemma is not connected yet.",
-        "skills": payload.skills,
-        "job_description": payload.job_description,
-        "next_steps": [
-            "Identify the key skills listed in the job description.",
-            "Choose one skill to practice in a small project.",
-            "Prepare an example of how you used that skill.",
-        ],
-    }
+    try:
+        return generate_career_response(payload.skills, payload.job_description)
+    except AIError as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from None
