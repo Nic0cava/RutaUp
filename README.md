@@ -21,6 +21,22 @@ Jinja2 renders the page and results on the server. The form posts to `/analyze` 
 4. Open http://127.0.0.1:8000/docs to try the API directly.
 5. Press `Ctrl+C` in the terminal to stop the server.
 
+### Google API Connection Test
+
+With `GEMINI_API_KEY` set in `.env`, run:
+
+```bash
+uv run python -m backend.test_connection
+```
+
+Type your prompt when asked, or pass it directly:
+
+```bash
+uv run python -m backend.test_connection "Suggest three skills for a Python backend internship."
+```
+
+Each run sends one prompt and prints the response, keeping the key private. It discovers an available Gemma model (preferring Gemma 4 if listed). To choose a specific model, add `GEMINI_MODEL=your-model-id` to `.env`. Check the printed model name: success confirms access to that model, not necessarily Gemma 4. This test does not change the web form's demo behavior.
+
 This starter returns demo data. Gemma, real skill analysis, resource recommendations, and interview questions are not connected yet.
 
 ### Project Layout
