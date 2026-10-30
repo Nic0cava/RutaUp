@@ -17,6 +17,12 @@
     <section class="card" aria-labelledby="form-heading">
       <h2 id="form-heading">Where do you want to go?</h2>
       <p>Share your skills and the role you’re working toward.</p>
+      <details>
+        <summary>Sample inputs: Data Analyst internship</summary>
+        <p><strong>Skills:</strong> Python, Pandas, Excel</p>
+        <p><strong>Job description:</strong> Data Analyst Intern; SQL querying, Python, dashboarding, and clear communication preferred.</p>
+        <p class="note">Copy these sample inputs into the form, or enter your own.</p>
+      </details>
       <form id="career-form" method="post" action="/analyze">
         <label for="skills">Your current skills</label>
         <textarea id="skills" name="skills" rows="3" maxlength="5000" placeholder="Python, HTML, teamwork…" required>{{ skills }}</textarea>
@@ -36,9 +42,34 @@
     {% if result %}
     <section id="results" class="card" aria-labelledby="results-heading">
       <p class="eyebrow">YOUR STARTING POINT</p>
-      <h2 id="results-heading">Your career roadmap</h2>
-      <p class="note">Model: {{ result.model }}</p>
-      <div class="ai-response">{{ result.text }}</div>
+      <h2 id="results-heading">Your career preparation plan</h2>
+      <h3>Skill gap analysis</h3>
+      <p><strong>Matching skills:</strong> {{ result.matching_skills | join(', ') or 'No matching skills identified.' }}</p>
+      <p><strong>Missing skills:</strong> {{ result.missing_skills | join(', ') or 'No missing skills identified.' }}</p>
+      <h3>Three-step learning roadmap</h3>
+      <ol>
+        {% for step in result.roadmap %}
+        <li><strong>{{ step.title }}</strong><p>{{ step.description }}</p></li>
+        {% endfor %}
+      </ol>
+      <h3>Verified learning and career resources</h3>
+      {% for resource in result.resources %}
+      <article class="card">
+        <h4><a href="{{ resource.url }}" target="_blank" rel="noopener noreferrer">{{ resource.title }}</a></h4>
+        <p><strong>{{ resource.provider }}</strong></p>
+        <p>{{ resource.description }}</p>
+        <p>{{ resource.why_it_helps }}</p>
+        <p class="note">{{ resource.access_conditions }}</p>
+      </article>
+      {% else %}
+      <p>No curated resource match yet.</p>
+      {% endfor %}
+      <h3>Interview practice</h3>
+      <ol>
+        {% for question in result.interview_questions %}
+        <li>{{ question }}</li>
+        {% endfor %}
+      </ol>
     </section>
     {% endif %}
   </main>

@@ -5,7 +5,13 @@
     "provider": "FIU",
     "url": "https://career.fiu.edu/",
     "description": "Career information and support for resume writing, professional development, internships and job searches.",
-    "skill_tags": ["resume", "career", "professional development", "internships", "job search"],
+    "skill_tags": [
+      "resume",
+      "career",
+      "professional development",
+      "internships",
+      "job search"
+    ],
     "audience": "FIU students and alumni",
     "access_conditions": "Public information is free to read. Appointments and student services may require FIU eligibility and sign-in; check individual services.",
     "verified": true,
@@ -18,7 +24,13 @@
     "provider": "ColorStack at FIU",
     "url": "https://colorstackatfiu.vercel.app/",
     "description": "Student community offering career preparation, resume and interview support, mentorship and networking.",
-    "skill_tags": ["resume", "interview", "networking", "mentorship", "career"],
+    "skill_tags": [
+      "resume",
+      "interview",
+      "networking",
+      "mentorship",
+      "career"
+    ],
     "audience": "All majors and universities, with a focus on computer science learners",
     "access_conditions": "The page states membership is free. Complete the membership form to participate; consult event registration details.",
     "verified": true,
@@ -31,7 +43,11 @@
     "provider": "Google Developer Group at FIU",
     "url": "https://gdgatfiu.vercel.app/",
     "description": "Public information about student-run developer workshops, tech talks and opportunities to meet other developers.",
-    "skill_tags": ["networking", "developer community", "programming"],
+    "skill_tags": [
+      "networking",
+      "developer community",
+      "programming"
+    ],
     "audience": "All skill levels, worldwide",
     "access_conditions": "Public community information is free to browse. Individual event costs and registration requirements must be checked; this is not a verified free course listing.",
     "verified": true,
@@ -45,7 +61,15 @@
     "provider": "Code Crunch Worldwide",
     "url": "https://codecrunchglobal.vercel.app/courses",
     "description": "Study catalog with schools covering SQL, statistics, visualization, programming, AI and career preparation; individual course readiness varies.",
-    "skill_tags": ["sql", "statistics", "data visualization", "python", "artificial intelligence", "interview", "excel"],
+    "skill_tags": [
+      "sql",
+      "statistics",
+      "data visualization",
+      "python",
+      "artificial intelligence",
+      "interview",
+      "excel"
+    ],
     "audience": "Self-paced learners",
     "access_conditions": "Catalog advertises no-cost, self-paced learning. Some entries are partial or not ready; this is a catalog, not a guarantee of a complete course or academic credit.",
     "verified": true,
@@ -58,7 +82,9 @@
     "provider": "SQLBolt",
     "url": "https://sqlbolt.com/",
     "description": "Browser-based SQL lessons and exercises covering queries, joins, aggregates and table operations.",
-    "skill_tags": ["sql"],
+    "skill_tags": [
+      "sql"
+    ],
     "audience": "SQL beginners",
     "access_conditions": "Public lessons are readable without payment or sign-in. Interactive exercise completion was not tested.",
     "verified": true,
@@ -71,7 +97,11 @@
     "provider": "Harvard CS50",
     "url": "https://cs50.harvard.edu/python/",
     "description": "Introduction to Python programming with functions, loops, exceptions, testing and file handling.",
-    "skill_tags": ["python", "programming", "unit testing"],
+    "skill_tags": [
+      "python",
+      "programming",
+      "unit testing"
+    ],
     "audience": "Learners with or without programming experience",
     "access_conditions": "OpenCourseWare materials are free. Optional verified credentials are separate; account requirements may apply to submissions.",
     "verified": true,
@@ -84,7 +114,11 @@
     "provider": "Harvard CS50",
     "url": "https://cs50.harvard.edu/ai/",
     "description": "AI course with Python projects covering search, classification, optimization, machine learning and neural networks.",
-    "skill_tags": ["artificial intelligence", "machine learning", "neural networks"],
+    "skill_tags": [
+      "artificial intelligence",
+      "machine learning",
+      "neural networks"
+    ],
     "audience": "Learners with CS50x or at least one year of Python experience",
     "access_conditions": "OpenCourseWare is free. An edX account is required for project feedback; optional paid credentials are separate.",
     "verified": true,
@@ -97,11 +131,78 @@
     "provider": "Harvard CS50",
     "url": "https://cs50.harvard.edu/sql/",
     "description": "SQL course covering relational databases, queries, joins, schema design, views and indexes.",
-    "skill_tags": ["sql", "database design"],
+    "skill_tags": [
+      "sql",
+      "database design"
+    ],
     "audience": "Learners interested in relational databases",
     "access_conditions": "OpenCourseWare is free. An edX account is required for assignment feedback; optional paid credentials are separate.",
     "verified": true,
     "verification_date": "2026-10-30",
     "verification_note": "Confirmed SQL syllabus, free OpenCourseWare access and account requirement on the course page."
+  },
+  {
+    "id": "roadmap-data-analyst",
+    "title": "Data Analyst Learning Roadmap",
+    "provider": "roadmap.sh",
+    "url": "https://roadmap.sh/data-analyst",
+    "description": "A role-based guide to data analysis, including data collection, cleaning, visualization and communicating insights.",
+    "skill_tags": [
+      "data analyst",
+      "data analysis"
+    ],
+    "audience": "Self-directed learners",
+    "access_conditions": "Public roadmap is free to browse. Linked third-party courses and optional premium features may require payment or an account.",
+    "verified": true,
+    "verification_date": "2026-10-30",
+    "verification_note": "Opened the destination and confirmed its subject and roadmap description. Linked courses were not individually verified.",
+    "role_tags": [
+      "data analyst"
+    ]
+  },
+  {
+    "id": "roadmap-sql",
+    "title": "SQL Learning Roadmap",
+    "provider": "roadmap.sh",
+    "url": "https://roadmap.sh/sql",
+    "description": "A step-by-step learning roadmap for SQL.",
+    "skill_tags": [
+      "sql"
+    ],
+    "audience": "Self-directed learners",
+    "access_conditions": "Public roadmap is free to browse. Linked third-party courses and optional premium features may require payment or an account.",
+    "verified": true,
+    "verification_date": "2026-10-30",
+    "verification_note": "Opened the destination and confirmed its subject and roadmap description. Linked courses were not individually verified."
+  },
+  {
+    "id": "roadmap-python",
+    "title": "Python Learning Roadmap",
+    "provider": "roadmap.sh",
+    "url": "https://roadmap.sh/python",
+    "description": "A Python developer learning roadmap covering language foundations and development skills.",
+    "skill_tags": [
+      "python"
+    ],
+    "audience": "Self-directed learners",
+    "access_conditions": "Public roadmap is free to browse. Linked third-party courses and optional premium features may require payment or an account.",
+    "verified": true,
+    "verification_date": "2026-10-30",
+    "verification_note": "Opened the destination and confirmed its subject and roadmap description. Linked courses were not individually verified."
+  },
+  {
+    "id": "roadmap-power-bi",
+    "title": "Power BI Learning Roadmap",
+    "provider": "roadmap.sh",
+    "url": "https://roadmap.sh/power-bi",
+    "description": "A step-by-step learning roadmap for developing Power BI skills.",
+    "skill_tags": [
+      "power bi"
+    ],
+    "audience": "Self-directed learners",
+    "access_conditions": "Public roadmap is free to browse. Linked third-party courses and optional premium features may require payment or an account. The page includes a DataCamp partnership; paid courses are not presented as free.",
+    "verified": true,
+    "verification_date": "2026-10-30",
+    "verification_note": "Opened the destination and confirmed its subject and roadmap description. Linked courses were not individually verified."
   }
 ]

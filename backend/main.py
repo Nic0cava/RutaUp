@@ -6,7 +6,8 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field, ValidationError, field_validator
 
-from backend.ai import AIError, generate_career_response
+from backend.ai import AIError, generate_career_response, validate_analysis
+from backend.resource_matcher import recommend_resources
 
 FRONTEND = Path(__file__).resolve().parent.parent / "frontend"
 app = FastAPI(title="RutaUp API")
@@ -25,6 +26,20 @@ class AnalysisRequest(BaseModel):
             raise ValueError("Please enter some text.")
         return value.strip()
 
+
+
+def analyze_student(payload: AnalysisRequest) -> dict:
+    """Both routes share validation, live AI generation and catalog matching."""
+    result = validate_analysis(
+        generate_career_response(payload.skills, payload.job_description)
+    )
+    try:
+        result["resources"] = recommend_resources(
+            result["missing_skills"], job_description=payload.job_description
+        )
+    except (OSError, ValueError):
+        raise AIError("Learning resources are temporarily unavailable. Please try again.") from None
+    return result
 
 @app.get("/", include_in_schema=False)
 def home(request: Request):
@@ -52,7 +67,7 @@ def analyze_form(
             request=request, name="index.html", context=context, status_code=422,
         )
     try:
-        context["result"] = generate_career_response(payload.skills, payload.job_description)
+        context["result"] = analyze_student(payload)
     except AIError as exc:
         context["error"] = str(exc)
         return templates.TemplateResponse(
@@ -71,6 +86,6 @@ def health():
 @app.post("/api/analyze")
 def analyze(payload: AnalysisRequest):
     try:
-        return generate_career_response(payload.skills, payload.job_description)
+        return analyze_student(payload)
     except AIError as exc:
         raise HTTPException(status_code=502, detail=str(exc)) from None

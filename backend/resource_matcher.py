@@ -1,8 +1,8 @@
 """Offline catalog recommendations; no model calls or third-party dependencies.
 
-Integration: recommend_resources(validated_analysis["missing_skills"]).
-The current remote AI connector returns plain text, so its owner must first
-provide a validated list of missing skills. Do not pass the entire AI response.
+Integration: recommend_resources(validated_analysis["missing_skills"],
+                                 job_description=job_description).
+Job context matches only explicitly supported role titles; no model calls.
 """
 
 import json
@@ -28,6 +28,7 @@ _ALIASES = {
     "powerbi": "power bi", "microsoft power bi": "power bi",
     "data visualisation": "data visualization",
     "network building": "networking",
+    "data analytics": "data analysis",
 }
 
 
@@ -66,6 +67,11 @@ def _valid_resource(resource):
     if any(not isinstance(resource.get(key), str) or not resource[key].strip()
            for key in _TEXT_FIELDS):
         return False
+    roles = resource.get("role_tags", [])
+    if not isinstance(roles, list) or any(
+        not isinstance(role, str) or not role.strip() for role in roles
+    ):
+        return False
     tags = resource.get("skill_tags")
     if not isinstance(tags, list) or not tags or any(
         not isinstance(tag, str) or not tag.strip() for tag in tags
@@ -86,15 +92,20 @@ def _load_resources():
     return resources
 
 
-def recommend_resources(missing_skills: list[str], limit: int = 5) -> list[dict]:
+def recommend_resources(
+    missing_skills: list[str], limit: int = 5, *, job_description: str = ""
+) -> list[dict]:
     """Return catalog fields plus matched_skills, relevance_score and why_it_helps.
 
-    Rank by number of distinct matching skills, non-catalog resources first,
+    Rank by distinct matching skills plus explicit role match, non-catalog resources first,
     FIU provider preference, then title and URL/id for deterministic ties.
     Broad catalogs must set is_catalog=True; other resources default to False.
     Exact normalized tags avoid unrelated
     substring matches. Invalid entries are skipped; catalog file errors surface.
-    Empty/unknown skills or a nonpositive limit return []. Invalid argument types
+    Optional job context recognizes a Data Analyst title at the start of the
+    description, optionally after Job title/Target role and a seniority prefix.
+    Empty/unknown skills without a role match or a nonpositive limit return [].
+    Invalid argument types
     raise TypeError. This function only reads the bundled catalog.
     """
     if not isinstance(missing_skills, list) or any(
@@ -103,22 +114,41 @@ def recommend_resources(missing_skills: list[str], limit: int = 5) -> list[dict]
         raise TypeError("missing_skills must be a list of strings")
     if type(limit) is not int:
         raise TypeError("limit must be an integer")
+    if not isinstance(job_description, str):
+        raise TypeError("job_description must be a string")
+    # Anchor to the title, so incidental mentions of another team's role do not
+    # recommend that career path. Only this curated role is supported for MVP.
+    title = _normalize(job_description)
+    role_match = re.match(
+        r"^(?:(?:job title|target role)\s*:\s*)?"
+        r"(?:(?:junior|senior|entry level|lead)\s+)?data analyst\b", title
+    )
+    target_roles = {"data analyst"} if role_match else set()
     skills = {_normalize(skill) for skill in missing_skills if skill.strip()}
-    if not skills or limit <= 0:
+    if (not skills and not target_roles) or limit <= 0:
         return []
     ranked = []
     for resource in _load_resources():
         if not _valid_resource(resource):
             continue
         matched = sorted(skills & {_normalize(tag) for tag in resource["skill_tags"]})
-        if not matched:
+        matched_roles = sorted(target_roles & {
+            _normalize(role) for role in resource.get("role_tags", [])
+        })
+        if not matched and not matched_roles:
             continue
+        score = len(matched) + len(matched_roles)
+        reasons = []
+        if matched:
+            reasons.append("Matches your skill gaps: " + ", ".join(matched) + ".")
+        if matched_roles:
+            reasons.append("Supports your target role: " + ", ".join(matched_roles) + ".")
         result = dict(resource, skill_tags=list(resource["skill_tags"]),
-                      matched_skills=matched, relevance_score=len(matched),
-                      why_it_helps="Matches your skill gaps: " + ", ".join(matched) + ".")
+                      matched_skills=matched, matched_roles=matched_roles,
+                      relevance_score=score, why_it_helps=" ".join(reasons))
         fiu = bool(re.search(r"\bfiu\b|florida international university",
                              resource["provider"], re.IGNORECASE))
-        ranked.append(((-len(matched), resource.get("is_catalog", False),
+        ranked.append(((-score, resource.get("is_catalog", False),
                         not fiu, resource["title"].casefold(),
                         _url_key(resource["url"]), resource["id"]), result))
     ranked.sort(key=lambda item: item[0])
