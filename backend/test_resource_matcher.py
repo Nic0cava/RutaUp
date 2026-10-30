@@ -24,8 +24,9 @@ class ResourceMatcherTests(unittest.TestCase):
 
     def test_sql_catalog(self):
         results = matcher.recommend_resources([" SQL "])
-        self.assertEqual([item["id"] for item in results],
-                         ["cs50-sql", "sqlbolt", "code-crunch-catalog"])
+        ids = [item["id"] for item in results]
+        for specific in ("cs50-sql", "sqlbolt", "roadmap-sql"):
+            self.assertLess(ids.index(specific), ids.index("code-crunch-catalog"))
         self.assertTrue(all(item["matched_skills"] == ["sql"] for item in results))
 
     def test_interview_preparation(self):
@@ -44,9 +45,54 @@ class ResourceMatcherTests(unittest.TestCase):
                 self.assertIn("cs50-ai", [item["id"] for item in
                                          matcher.recommend_resources([skill])])
 
-    def test_unknown_and_power_bi(self):
-        for skills in (["underwater basket weaving"], ["powerbi"], ["Power BI"]):
-            self.assertEqual(matcher.recommend_resources(skills), [])
+    def test_unknown_skills(self):
+        self.assertEqual(matcher.recommend_resources(["underwater basket weaving"]), [])
+
+    def test_roadmap_skills(self):
+        for skill, identifier in (("Data Analyst", "roadmap-data-analyst"),
+                                  ("SQL", "roadmap-sql"), ("Python", "roadmap-python"),
+                                  ("Power BI", "roadmap-power-bi"), ("powerbi", "roadmap-power-bi")):
+            with self.subTest(skill=skill):
+                self.assertIn(identifier, [r["id"] for r in matcher.recommend_resources([skill])])
+
+    def test_explicit_data_analyst_role(self):
+        for title in ("Data Analyst Intern; SQL required", "Junior Data Analyst",
+                      "Target role: Data Analyst", "Senior Data-Analyst"):
+            with self.subTest(title=title):
+                result = matcher.recommend_resources([], job_description=title)
+                self.assertEqual([r["id"] for r in result], ["roadmap-data-analyst"])
+                self.assertIn("target role", result[0]["why_it_helps"])
+
+    def test_unrelated_roles_do_not_infer_skills(self):
+        for title in ("Nursing intern", "Software engineer working with a data analyst",
+                      "Database administrator: SQL and Python"):
+            with self.subTest(title=title):
+                self.assertEqual(matcher.recommend_resources([], job_description=title), [])
+        result = matcher.recommend_resources(["SQL"], job_description="Software Engineer")
+        self.assertNotIn("roadmap-data-analyst", [r["id"] for r in result])
+
+    def test_roadmap_https_and_deduplication(self):
+        result = matcher.recommend_resources(
+            ["SQL", "sql", "Python", "Power BI", "data analysis"], limit=20,
+            job_description="Data Analyst Intern",
+        )
+        urls = [r["url"] for r in result]
+        self.assertEqual(len(urls), len(set(urls)))
+        roadmaps = [r for r in result if r["provider"] == "roadmap.sh"]
+        self.assertEqual(len(roadmaps), 4)
+        self.assertTrue(all(r["verified"] and r["url"].startswith("https://roadmap.sh/")
+                            for r in roadmaps))
+
+    def test_fiu_resources_remain_relevant(self):
+        result = matcher.recommend_resources(["interview", "resume"], job_description="Data Analyst")
+        self.assertEqual(result[0]["id"], "fiu-colorstack")
+        self.assertIn("fiu-career", [r["id"] for r in result])
+
+    def test_invalid_role_metadata_or_input(self):
+        for roles in ("data analyst", [None], [" "]):
+            self.assertEqual(self.recommend([resource(role_tags=roles)]), [])
+        with self.assertRaises(TypeError):
+            matcher.recommend_resources([], job_description=None)
 
     def test_empty_input(self):
         with patch.object(matcher, "_load_resources") as loader:
